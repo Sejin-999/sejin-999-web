@@ -14,10 +14,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(
-        name = "Comment",
+        name = "User",
         uniqueConstraints = {
                 @UniqueConstraint(name = "unique_id", columnNames = {"ID"})
-        }
+        },
+        schema = "sejin_999_test_db"
 )
 
 
@@ -41,4 +42,6 @@ public class User {
     private LocalDateTime isUpdated;
     @Column(name = "IS_DELETED" , nullable = false)
     private boolean isDELETED;
+
+
 }

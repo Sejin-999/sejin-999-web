@@ -1,6 +1,7 @@
 package com.sejin999.domain.user.service;
 
 import com.sejin999.domain.user.domain.User;
+import com.sejin999.domain.user.repository.DAO.UserDAO;
 import com.sejin999.domain.user.repository.DTO.UserDTO;
 import com.sejin999.domain.user.repository.UserJPARepository;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -30,8 +33,9 @@ public class UserService {
      */
 
     //signUp
-    public String userSignUpService(UserDTO userSignUpDTO){
+    public String user_signUp_service(UserDTO userSignUpDTO){
         String return_text = "";
+
 
         //user Data 검증 완료..
         String userId = userSignUpDTO.getUserId();
@@ -53,15 +57,15 @@ public class UserService {
             }catch (DataIntegrityViolationException e) {
             // 데이터베이스 무결성 제약 조건 위반 - 키 중복  or 조건 위배
                 return_text = "사용자의 데이터 제대로 검증되지 않았습니다.";
-                log.warn("userSignUpService : {}" , return_text);
+                log.warn("user_signUp_service : {}" , return_text);
             } catch (JpaSystemException e) {
             // JPA 연동 중 문제 발생
                 return_text = "데이터베이스 연동 중 오류가 발생";
-                log.warn("userSignUpService : {}" , return_text);
+                log.warn("user_signUp_service : {}" , return_text);
             } catch (DataAccessException e) {
             // 데이터 액세스 오류
                 return_text = "데이터베이스 액세스 중 오류가 발생";
-                log.warn("userSignUpService : {}" , return_text);
+                log.warn("user_signUp_service : {}" , return_text);
             } catch (Exception e) {
             // 다른 모든 예외 처리
                 return_text = "알 수 없는 오류가 발생";
@@ -79,12 +83,12 @@ public class UserService {
     }
 
 
-    public String userUpdateService(UserDTO userDTO){
+    public String user_update_service(UserDTO userDTO){
         /**
          * userId 존재하는지 확인 -> 
          * 존재한다면 데이터 업데이트 -> 앞에서 데이터는 체크함
          */
-        log.info("userUpdateService start >> {}" , userDTO.getUserId());
+        log.info("user_update_service start >> {}" , userDTO.getUserId());
         String return_text = "";
         // userId 값으로 가지고올것 -> String 이기 때문에 Optional 로 불러서 체크를 일단해보고 .. 존재여부를 파악해야지
         Optional<User> user = Optional.ofNullable(userJPARepository.findById(userDTO.getUserId()));
@@ -96,21 +100,21 @@ public class UserService {
 
             // 업데이트된 사용자 정보 저장
             try{
-                log.info("userUpdateService >> update Start to DB >> {}",userDTO.getUserId());
+                log.info("user_update_service >> update Start to DB >> {}",userDTO.getUserId());
                 userJPARepository.save(userToUpdate);
 
             }catch (DataIntegrityViolationException e) {
                 // 데이터베이스 무결성 제약 조건 위반 - 키 중복  or 조건 위배
                 return_text = "사용자의 데이터 제대로 검증되지 않았습니다.";
-                log.warn("userSignUpService : {}" , return_text);
+                log.warn("user_signUp_service : {}" , return_text);
             } catch (JpaSystemException e) {
                 // JPA 연동 중 문제 발생
                 return_text = "데이터베이스 연동 중 오류가 발생";
-                log.warn("userSignUpService : {}" , return_text);
+                log.warn("user_signUp_service : {}" , return_text);
             } catch (DataAccessException e) {
                 // 데이터 액세스 오류
                 return_text = "데이터베이스 액세스 중 오류가 발생";
-                log.warn("userSignUpService : {}" , return_text);
+                log.warn("user_signUp_service : {}" , return_text);
             } catch (Exception e) {
                 // 다른 모든 예외 처리
                 return_text = "알 수 없는 오류가 발생";
@@ -125,4 +129,84 @@ public class UserService {
         return return_text;
     }
 
+    public List<UserDAO> user_read_userList_service(){
+        log.info("user_read_userList_service >> Start");
+        String return_text = "";
+
+        try {
+            List<User> userList = userJPARepository.getUserByIsDELETED(false);
+
+            // User 엔터티를 UserDAO로 변환
+            List<UserDAO> userDAOList = userList.stream()
+                    .map(this::mapUserToUserDAO)
+                    .collect(Collectors.toList());
+
+            return userDAOList;
+
+        }catch (DataIntegrityViolationException e) {
+            // 데이터베이스 무결성 제약 조건 위반 - 키 중복  or 조건 위배
+            return_text = "사용자의 데이터 제대로 검증되지 않았습니다.";
+            log.warn("user_signUp_service : {}" , return_text);
+        } catch (JpaSystemException e) {
+            // JPA 연동 중 문제 발생
+            return_text = "데이터베이스 연동 중 오류가 발생";
+            log.warn("user_signUp_service : {}" , return_text);
+        } catch (DataAccessException e) {
+            // 데이터 액세스 오류
+            return_text = "데이터베이스 액세스 중 오류가 발생";
+            log.warn("user_signUp_service : {}" , return_text);
+        } catch (Exception e) {
+            // 다른 모든 예외 처리
+            return_text = "알 수 없는 오류가 발생";
+            log.warn(e.getMessage());
+        }
+
+        return null;
+
+    }
+
+    private UserDAO mapUserToUserDAO(User user) {
+        UserDAO userDAO = new UserDAO();
+        userDAO.setUserId(user.getId());
+        userDAO.setUserNickName(user.getNickName());
+        return userDAO;
+    }
+
+
+    public String user_delete_service(String userId){
+        log.info("user_delete_service start >> {}" , userId);
+        String return_text = "";
+
+        Optional<User> user = Optional.ofNullable(userJPARepository.findById(userId));
+
+        if(user.isPresent()){
+            User userDelete = user.get();
+            userDelete.setDELETED(true);
+            try {
+                userJPARepository.save(userDelete);
+                return_text ="user delete success";
+
+            }catch (DataIntegrityViolationException e) {
+                // 데이터베이스 무결성 제약 조건 위반 - 키 중복  or 조건 위배
+                return_text = "사용자의 데이터 제대로 검증되지 않았습니다.";
+                log.warn("user_signUp_service : {}" , return_text);
+            } catch (JpaSystemException e) {
+                // JPA 연동 중 문제 발생
+                return_text = "데이터베이스 연동 중 오류가 발생";
+                log.warn("user_signUp_service : {}" , return_text);
+            } catch (DataAccessException e) {
+                // 데이터 액세스 오류
+                return_text = "데이터베이스 액세스 중 오류가 발생";
+                log.warn("user_signUp_service : {}" , return_text);
+            } catch (Exception e) {
+                // 다른 모든 예외 처리
+                return_text = "알 수 없는 오류가 발생";
+                log.warn(e.getMessage());
+            }
+
+        }else{
+            return_text = "user is not exists";
+        }
+        return return_text;
+    }
 }

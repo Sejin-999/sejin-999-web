@@ -1,14 +1,14 @@
 package com.sejin999.domain.user.controller;
 
+import com.sejin999.domain.user.repository.DAO.UserDAO;
 import com.sejin999.domain.user.repository.DTO.UserDTO;
 import com.sejin999.domain.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -29,11 +29,11 @@ public class UserController {
 
         if(userSignUpDTO.isCreateValid()){
             log.info("userService Start");
-            String retrun_text = userService.userSignUpService(userSignUpDTO);
-            if(retrun_text.equals("success")){
-               return ResponseEntity.ok(retrun_text);
+            String return_text = userService.user_signUp_service(userSignUpDTO);
+            if(return_text.equals("success")){
+               return ResponseEntity.ok(return_text);
             }else{
-             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(retrun_text);
+             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
             }
         }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("검증기준을 통과하지못하였습니다.");
@@ -50,15 +50,40 @@ public class UserController {
 
         if(userSignUpDTO.isCreateValid()){
             log.info("userService Start");
-            String retrun_text = userService.userUpdateService(userSignUpDTO);
-            if(retrun_text.equals("User updated success")){
-                return ResponseEntity.ok(retrun_text);
+            String return_text = userService.user_update_service(userSignUpDTO);
+            if(return_text.equals("User updated success")){
+                return ResponseEntity.ok(return_text);
             }else{
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(retrun_text);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
             }
         }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("검증기준을 통과하지못하였습니다.");
         }
 
+    }
+
+    @GetMapping("/test_read")
+    public ResponseEntity testUserReadController(){
+        log.info("testUserReadController >> Start");
+
+        List<UserDAO> userList = userService.user_read_userList_service();
+
+        if (userList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("userData 가 없습니다.");
+        }
+        return ResponseEntity.ok(userList);
+    }
+
+    @DeleteMapping("/test_delete")
+    public ResponseEntity testUserDeleteController(@RequestBody String userId){
+        log.info("testUserDeleteController >> {}" , userId);
+
+        String return_text = userService.user_delete_service(userId);
+
+        if(return_text.equals("user delete success")){
+            return ResponseEntity.ok(return_text);
+        }else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
+        }
     }
 }

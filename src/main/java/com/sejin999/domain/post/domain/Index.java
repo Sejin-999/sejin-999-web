@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(
-        name = "Index",
+        name = "Index_list",
         uniqueConstraints = {
                 @UniqueConstraint(name = "title", columnNames = {"title"})
         },

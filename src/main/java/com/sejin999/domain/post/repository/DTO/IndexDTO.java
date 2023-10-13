@@ -16,7 +16,7 @@ public class IndexDTO {
     }
     private boolean isValidLength() {
         return !isEmptyOrNull(title) && title.length() <= 10 &&
-                !isEmptyOrNull(content) && content.length() <= 10;
+                !isEmptyOrNull(content) && content.length() <= 200;
     }
     private boolean isEmptyOrNull(String value) {
         return value == null || value.isEmpty();

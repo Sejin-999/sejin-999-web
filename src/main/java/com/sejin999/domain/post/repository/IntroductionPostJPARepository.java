@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface IntroductionPostJPARepository extends JpaRepository<IntroductionPost, Long> {
     List<IntroductionPost> findByIndexEntity(Index index);
+    IntroductionPost findBySeq(Long seq);
 
+    boolean existsBySeq(Long seq);
 }

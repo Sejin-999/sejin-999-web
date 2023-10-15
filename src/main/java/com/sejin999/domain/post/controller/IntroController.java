@@ -1,6 +1,7 @@
 package com.sejin999.domain.post.controller;
 
 import com.sejin999.domain.post.repository.DTO.IntroDTO;
+import com.sejin999.domain.post.repository.DTO.IntroUpdateDTO;
 import com.sejin999.domain.post.service.IndexService;
 import com.sejin999.domain.post.service.IntroductionPostService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,9 +41,28 @@ public class IntroController {
             // 실패
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청값이 문제가 있습니다.");
         }
+    }
+    @PostMapping("/update_intro")
+    public ResponseEntity intro_update_service(@RequestBody IntroUpdateDTO introUpdateDTO){
+        log.info("intro_update_service >> start");
+
+        if(introUpdateDTO.getIntroDTO().isCreateValid() &&
+        introductionPostService.intro_exists(introUpdateDTO.getIntroSeq())){
+            //success check
+            String return_text =
+                    introductionPostService.intro_update_service(introUpdateDTO.getIntroSeq()
+                            , introUpdateDTO.getIntroDTO());
+            if(return_text.equals("success")){
+                return ResponseEntity.ok(return_text);
+            }else{
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
+            }
+        }else{
+            //fail check
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청값이 문제가 있습니다.");
+        }
 
     }
-
 
 
 }

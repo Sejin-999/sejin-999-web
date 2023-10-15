@@ -25,6 +25,16 @@ public class IndexService {
         this.indexJPARepository = indexJPARepository;
     }
 
+    /***
+     * 추가 기능..
+     * Index exists
+     */
+    public boolean index_exists(Long seq){
+        log.info("index_exists >> {} , {}" ,seq , indexJPARepository.existsBySeq(seq));
+        return  indexJPARepository.existsBySeq(seq);
+    }
+
+
     /**
      * 기본 기능..
      * index 추가 , 업데이트 , 삭제 , 인덱스 목록 불러오기 , 인덱스 상세 보기

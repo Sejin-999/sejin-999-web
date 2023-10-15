@@ -14,14 +14,21 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/post")
-public class postController {
+@RequestMapping("/api/v1/index")
+public class IndexController {
 
     private final IndexService indexService;
 
-    public postController(IndexService indexService) {
+    public IndexController(IndexService indexService) {
         this.indexService = indexService;
     }
+
+    /**
+     *
+     * @param indexDTO
+     * index Controller
+     * @return
+     */
     @PostMapping("/create_index")
     public ResponseEntity index_create_controller(@RequestBody IndexDTO indexDTO){
         log.info("index_create_controller >> index {}",indexDTO.getTitle());
@@ -78,4 +85,8 @@ public class postController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("cant get content");
         }
     }
+
+
+
+
 }

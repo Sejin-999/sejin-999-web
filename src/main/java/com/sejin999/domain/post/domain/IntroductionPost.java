@@ -26,11 +26,11 @@ public class IntroductionPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="SEQ")
     private Long seq;
-    @Column(name = "TITLE" , nullable = false , length = 10)
+    @Column(name = "TITLE" , nullable = false , length = 30)
     private String title;
     @Lob
-    @Column(name = "IMAGE", nullable = false, columnDefinition = "LONGBLOB")
-    private byte[] image;
+    @Column(name = "IMAGE", nullable = false, length = 300)
+    private String imageURL;
     @Column(name = "CONTENT" , nullable = false , length = 200)
     private String content;
     @Column(name = "IS_CREATED" , nullable = false)

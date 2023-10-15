@@ -1,0 +1,48 @@
+package com.sejin999.domain.post.controller;
+
+import com.sejin999.domain.post.repository.DTO.IntroDTO;
+import com.sejin999.domain.post.service.IndexService;
+import com.sejin999.domain.post.service.IntroductionPostService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/intro")
+public class IntroController {
+    private final IndexService indexService;
+    private final IntroductionPostService introductionPostService;
+
+    public IntroController(IndexService indexService, IntroductionPostService introductionPostService) {
+        this.indexService = indexService;
+        this.introductionPostService = introductionPostService;
+    }
+    @PostMapping("/create_intro")
+    public ResponseEntity intro_create_service(@RequestBody IntroDTO introDTO){
+        log.info("intro_create_service start");
+        boolean testIndex = indexService.index_exists(introDTO.getIndexSeq());
+        if(introDTO.isCreateValid() && testIndex){
+            // 검증기준성공 && 인덱스가 존재
+            // 성공
+            String return_text = introductionPostService.
+                    Intro_create_service(introDTO);
+            if(return_text.equals("success")){
+                return ResponseEntity.ok(return_text);
+            }else{
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
+            }
+        }else{
+            // 실패
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청값이 문제가 있습니다.");
+        }
+
+    }
+
+
+
+}

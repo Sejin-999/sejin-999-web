@@ -1,10 +1,13 @@
 package com.sejin999.domain.post.service;
 
 import com.sejin999.domain.post.domain.Index;
+import com.sejin999.domain.post.domain.IntroductionPost;
 import com.sejin999.domain.post.repository.DAO.IndexDAO;
 import com.sejin999.domain.post.repository.DAO.IndexDetailDAO;
+import com.sejin999.domain.post.repository.DAO.IntroListDAO;
 import com.sejin999.domain.post.repository.DTO.IndexDTO;
 import com.sejin999.domain.post.repository.IndexJPARepository;
+import com.sejin999.domain.post.repository.IntroductionPostJPARepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,7 +15,6 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,9 +22,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IndexService {
     private final IndexJPARepository indexJPARepository;
-
-    public IndexService(IndexJPARepository indexJPARepository) {
+    private final IntroductionPostJPARepository introductionPostJPARepository;
+    public IndexService(IndexJPARepository indexJPARepository, IntroductionPostJPARepository introductionPostJPARepository) {
         this.indexJPARepository = indexJPARepository;
+        this.introductionPostJPARepository = introductionPostJPARepository;
     }
 
     /***
@@ -47,19 +50,36 @@ public class IndexService {
         /**
          * 여기서 SEQ를 통해 introductionPost 에 있는 리스트를 붙여서 한번에 보내줄 것 추가..
          */
-        indexDetailDAO = settingIndexDetailDAO(index);
+        List<IntroListDAO> introListDAO;
+        List<IntroductionPost> introList = introductionPostJPARepository.findByIndexEntity(index);
+        introListDAO = introList.stream()
+                .map(this::mapIntroToIntroListDAO)
+                .collect(Collectors.toList());
+
+        indexDetailDAO =settingIndexDetailDAO(index , introListDAO);
+
         return indexDetailDAO;
 
     }
 
-    private IndexDetailDAO settingIndexDetailDAO(Index index){
+    private IntroListDAO mapIntroToIntroListDAO(IntroductionPost introductionPost){
+        IntroListDAO introListDAO = new IntroListDAO();
+        introListDAO.setIntroSeq(introductionPost.getSeq());
+        introListDAO.setIntroTitle(introductionPost.getTitle());
+        introListDAO.setLastUpdate(introductionPost.getIsUpdated());
+        return introListDAO;
+    }
+
+    private IndexDetailDAO settingIndexDetailDAO(Index index , List<IntroListDAO> introductionPost){
         IndexDetailDAO indexDetailDAO = new IndexDetailDAO();
         indexDetailDAO.setTitle(index.getTitle());
         indexDetailDAO.setSeq(index.getSeq());
         indexDetailDAO.setContent(index.getContent());
         indexDetailDAO.setLastUpdate(index.getIsUpdated());
+        indexDetailDAO.setIntroList(introductionPost);
         return indexDetailDAO;
     }
+
 
     public List<IndexDAO> index_read_list_service(){
         log.info("index_read_list_service >> start");

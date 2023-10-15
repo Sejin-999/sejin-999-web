@@ -1,6 +1,8 @@
 package com.sejin999.domain.post.service;
 
 import com.sejin999.domain.post.domain.Index;
+import com.sejin999.domain.post.repository.DAO.IndexDAO;
+import com.sejin999.domain.post.repository.DAO.IndexDetailDAO;
 import com.sejin999.domain.post.repository.DTO.IndexDTO;
 import com.sejin999.domain.post.repository.IndexJPARepository;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,6 +29,69 @@ public class IndexService {
      * 기본 기능..
      * index 추가 , 업데이트 , 삭제 , 인덱스 목록 불러오기 , 인덱스 상세 보기
      */
+
+    public IndexDetailDAO index_read_detail_service(Long seq){
+        log.info("index_read_detail_service >> start");
+        IndexDetailDAO indexDetailDAO;
+        Index index = indexJPARepository.findBySeq(seq);
+        /**
+         * 여기서 SEQ를 통해 introductionPost 에 있는 리스트를 붙여서 한번에 보내줄 것 추가..
+         */
+        indexDetailDAO = settingIndexDetailDAO(index);
+        return indexDetailDAO;
+
+    }
+
+    private IndexDetailDAO settingIndexDetailDAO(Index index){
+        IndexDetailDAO indexDetailDAO = new IndexDetailDAO();
+        indexDetailDAO.setTitle(index.getTitle());
+        indexDetailDAO.setSeq(index.getSeq());
+        indexDetailDAO.setContent(index.getContent());
+        indexDetailDAO.setLastUpdate(index.getIsUpdated());
+        return indexDetailDAO;
+    }
+
+    public List<IndexDAO> index_read_list_service(){
+        log.info("index_read_list_service >> start");
+        List<Index> indexList;
+        List<IndexDAO> indexDAOList;
+        try {
+            indexList = indexJPARepository.getAllByIsDELETED(false);
+
+            indexDAOList = indexList.stream()
+                    .map(this::mapIndexToIndexDAO)
+                    .collect(Collectors.toList());
+
+        }catch (DataIntegrityViolationException e) {
+            // 데이터베이스 무결성 제약 조건 위반 - 키 중복  or 조건 위배
+            indexDAOList = null;
+            log.warn("index_create_service : {}");
+        } catch (JpaSystemException e) {
+            indexDAOList = null;
+            // JPA 연동 중 문제 발생
+            log.warn("index_create_service : {}");
+        } catch (DataAccessException e) {
+            // 데이터 액세스 오류
+            indexDAOList = null;
+            log.warn("index_create_service : {}");
+        } catch (Exception e) {
+            indexDAOList = null;
+            // 다른 모든 예외 처리
+            log.warn(e.getMessage());
+        }
+
+
+
+        return indexDAOList;
+    }
+
+    private IndexDAO mapIndexToIndexDAO(Index index){
+        IndexDAO indexDAO = new IndexDAO();
+        indexDAO.setSeq(index.getSeq());
+        indexDAO.setTitle(index.getTitle());
+        return indexDAO;
+    }
+
 
     //index 추가
     public String index_create_service(IndexDTO indexDTO){
@@ -61,7 +130,8 @@ public class IndexService {
         String return_text;
 
         Index findIndex = indexJPARepository.findById(index_seq)
-                .orElseThrow(() -> new RuntimeException("Index not found with id: " + index_seq));
+                .orElseThrow(() -> new RuntimeException("Index not found with id: "
+                        + index_seq));
 
         switch (check_indexUpdate(findIndex , indexDTO)){
             case 0 :

@@ -23,9 +23,9 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="SEQ")
     private Long seq;
-    @Column(name = "TITLE" , nullable = false , length = 10)
+    @Column(name = "TITLE" , nullable = false , length = 30)
     private String title;
-    @Column(name = "CONTENT" , nullable = false , length = 200)
+    @Column(name = "CONTENT" , nullable = false , length = 300)
     private String content;
     @Column(name = "IS_CREATED" , nullable = false)
     @CreationTimestamp

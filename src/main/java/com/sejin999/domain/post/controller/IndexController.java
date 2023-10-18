@@ -29,7 +29,7 @@ public class IndexController {
      * index Controller
      * @return
      */
-    @PostMapping("/create_index")
+    @GetMapping("/create_index")
     public ResponseEntity index_create_controller(@RequestBody IndexDTO indexDTO){
         log.info("index_create_controller >> index {}",indexDTO.getTitle());
         if(!indexDTO.isCreateValid()){
@@ -85,7 +85,6 @@ public class IndexController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("cant get content");
         }
     }
-
 
 
 

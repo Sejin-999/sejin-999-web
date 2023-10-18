@@ -2,9 +2,14 @@ package com.sejin999.domain.post.service;
 
 import com.sejin999.domain.post.domain.Index;
 import com.sejin999.domain.post.domain.IntroductionPost;
+import com.sejin999.domain.post.domain.Post;
+import com.sejin999.domain.post.repository.DAO.IntroDetailDAO;
+import com.sejin999.domain.post.repository.DAO.PostDetailDAO;
+import com.sejin999.domain.post.repository.DAO.PostListDAO;
 import com.sejin999.domain.post.repository.DTO.IntroDTO;
 import com.sejin999.domain.post.repository.IndexJPARepository;
 import com.sejin999.domain.post.repository.IntroductionPostJPARepository;
+import com.sejin999.domain.post.repository.PostJPARepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -12,19 +17,68 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 public class IntroductionPostService {
     private final IntroductionPostJPARepository introductionPostJPARepository;
     private final IndexJPARepository indexJPARepository;
-
-    public IntroductionPostService(IntroductionPostJPARepository introductionPostJPARepository, IndexJPARepository indexJPARepository) {
+    private final PostJPARepository postJPARepository;
+    public IntroductionPostService(IntroductionPostJPARepository introductionPostJPARepository, IndexJPARepository indexJPARepository, PostJPARepository postJPARepository) {
         this.introductionPostJPARepository = introductionPostJPARepository;
         this.indexJPARepository = indexJPARepository;
+        this.postJPARepository = postJPARepository;
     }
     public boolean intro_exists(Long introSeq){
         return introductionPostJPARepository.existsBySeq(introSeq);
     }
+
+    public IntroDetailDAO intro_read_detail_service(Long introSeq){
+        log.info("intro_read_detail_service >> start");
+        IntroductionPost introductionPost = introductionPostJPARepository.findBySeq(introSeq);
+        IntroDetailDAO introDetailDAO;
+
+        if(introductionPost != null){
+            introDetailDAO = mapIntroToIntroDetailDAO(introductionPost);
+            //make post List
+            introDetailDAO.setPostList(makePostList(introductionPost));
+            return introDetailDAO;
+
+        }else{
+            return null;
+        }
+    }
+
+    private IntroDetailDAO mapIntroToIntroDetailDAO(IntroductionPost introductionPost) {
+        IntroDetailDAO introDetailDAO =new IntroDetailDAO();
+        introDetailDAO.setIntroSeq(introductionPost.getSeq());
+        introDetailDAO.setTitle(introductionPost.getTitle());
+        introDetailDAO.setContent(introductionPost.getContent());
+        introDetailDAO.setLastUpdateTime(introductionPost.getIsUpdated());
+        introDetailDAO.setImageURL(introductionPost.getImageURL());
+        return introDetailDAO;
+    }
+
+    private List<PostListDAO> makePostList(IntroductionPost introductionPost){
+        List<PostListDAO> postListDAO;
+        List<Post> postList = postJPARepository.findByIntroductionPostIndex(introductionPost);
+        //map postListDAO
+        postListDAO = postList.stream()
+                .map(this::mapPostToPostListDAO)
+                .collect(Collectors.toList());
+        return postListDAO;
+    }
+
+    private PostListDAO mapPostToPostListDAO(Post post){
+        PostListDAO postListDAO = new PostListDAO();
+        postListDAO.setPostSeq(post.getSeq());
+        postListDAO.setTitle(post.getTitle());
+        postListDAO.setLastUpdateTime(post.getIsUpdated());
+        return postListDAO;
+    }
+
     @Transactional
     public String intro_update_service(Long introSeq , IntroDTO introDTO){
         String return_text;

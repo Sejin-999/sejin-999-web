@@ -1,5 +1,6 @@
 package com.sejin999.domain.post.controller;
 
+import com.sejin999.domain.post.repository.DAO.IntroDetailDAO;
 import com.sejin999.domain.post.repository.DTO.IntroDTO;
 import com.sejin999.domain.post.repository.DTO.IntroUpdateDTO;
 import com.sejin999.domain.post.service.IndexService;
@@ -62,4 +63,17 @@ public class IntroController {
     }
 
 
-}
+    @GetMapping("/intro_list")
+    public ResponseEntity intro_read_service(@RequestParam Long introSeq) {
+        if (introductionPostService.intro_exists(introSeq)) {
+            //존재
+            IntroDetailDAO introDetailDAO =
+                    introductionPostService.intro_read_detail_service(introSeq);
+
+            return ResponseEntity.ok(introDetailDAO);
+        } else {
+            //없음
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("옳바르지 않은 요청입니다.");
+        }
+        }
+    }

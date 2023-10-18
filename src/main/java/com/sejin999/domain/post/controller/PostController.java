@@ -41,10 +41,10 @@ public class PostController {
     }
 
     @GetMapping("/{postSeq}")
-    public ResponseEntity post_read_detail_controller(@PathVariable Long postSeq){
+    public ResponseEntity post_read_controller(@PathVariable Long postSeq){
             if(postService.post_exists_service(postSeq)){
                 PostDetailDAO postDetailDAO = 
-                        postService.post_read_detail_service(postSeq);
+                        postService.post_read_service(postSeq);
                 if(postDetailDAO !=null){
                     return ResponseEntity.ok(postDetailDAO);
                 }else{

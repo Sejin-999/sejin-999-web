@@ -5,22 +5,22 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Slf4j
 public class PostDTO {
     private String title;
-    private String content;
     private Long introSeq;
-
+    private List<PostDetailDTO> postDetailDTOList;
 
     public boolean isCreateValid(){
         return isValidLength();
     }
 
     private boolean isValidLength(){
-        return !isEmptyOrNull(title) && title.length() <=30 &&
-                !isEmptyOrNull(content) && content.length() <= 300;
+        return !isEmptyOrNull(title) && title.length() <=30;
     }
 
     private boolean isEmptyOrNull(String value) {

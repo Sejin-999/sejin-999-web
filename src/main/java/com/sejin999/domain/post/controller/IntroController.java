@@ -74,6 +74,6 @@ public class IntroController {
         } else {
             //없음
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("옳바르지 않은 요청입니다.");
-        }
+            }
         }
     }

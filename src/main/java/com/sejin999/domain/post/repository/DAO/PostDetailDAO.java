@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Slf4j
 public class PostDetailDAO {
     private String title;
-    private String content;
     private Long postSeq;
     private LocalDateTime lastUpdateTime;
     private LocalDateTime createTime;

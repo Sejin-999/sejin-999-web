@@ -14,17 +14,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(
-        name = "Post",
+        name = "Post_Detail",
         schema = "sejin_999_test_db"
 )
-public class Post {
-
+public class PostDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="SEQ")
     private Long seq;
-    @Column(name = "TITLE" , nullable = false , length = 30)
-    private String title;
+    @Column(name = "CONTENT" , nullable = false , length = 300)
+    private String content;
+    @Column(name = "POST_IMG_URL" , nullable = false , length = 300)
+    private String postImgURL;
     @Column(name = "IS_CREATED" , nullable = false)
     @CreationTimestamp
     private LocalDateTime isCreated;
@@ -36,6 +37,6 @@ public class Post {
 
     //FK
     @ManyToOne
-    @JoinColumn(name = "INTRO_SEQ", nullable = false)
-    private IntroductionPost introductionPostIndex;
+    @JoinColumn(name = "POST_SEQ", nullable = false)
+    private Post post;
 }

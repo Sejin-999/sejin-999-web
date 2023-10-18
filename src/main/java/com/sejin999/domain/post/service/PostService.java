@@ -4,6 +4,8 @@ import com.sejin999.domain.post.domain.IntroductionPost;
 import com.sejin999.domain.post.domain.Post;
 import com.sejin999.domain.post.domain.PostDetail;
 import com.sejin999.domain.post.repository.DAO.PostDetailDAO;
+import com.sejin999.domain.post.repository.DAO.PostDetailListDAO;
+import com.sejin999.domain.post.repository.DAO.PostListDAO;
 import com.sejin999.domain.post.repository.DTO.PostDTO;
 import com.sejin999.domain.post.repository.DTO.PostDetailDTO;
 import com.sejin999.domain.post.repository.IntroductionPostJPARepository;
@@ -16,6 +18,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,8 +43,23 @@ public class PostService {
         try {
             Post post = postJPARepository.findBySeq(postSeq);
             postDetailDAO = mapPostToPostDetailDAO(post);
+            
+            //postDetailList
+            List<PostDetailListDAO> postDetailListDAO;
+
+            List<PostDetail> postDeTailList
+                    = postDetailJPARepository.findByPost(post);
+
+            postDetailListDAO = postDeTailList.stream()
+                    .map(this::mapPostToPostDetailListDAO)
+                    .collect(Collectors.toList());
+
+            //merge
+
+            postDetailDAO.setPostDetailListDAO(postDetailListDAO);
+
         }catch (DataIntegrityViolationException e) {
-            // 데이터베이스 무결성 제약 조건 위반 - 키 중복  or 조건 위배
+            // 데이터베이스 무결성 제약 조건 위반 - seq 값이 Long타입이아닌경우
             postDetailDAO = null;
             log.warn("index_create_service : {}");
         } catch (JpaSystemException e) {
@@ -59,6 +77,13 @@ public class PostService {
         }
         return postDetailDAO;
 
+    }
+
+    private PostDetailListDAO mapPostToPostDetailListDAO(PostDetail postDetail){
+        PostDetailListDAO postDetailListDAO = new PostDetailListDAO();
+        postDetailListDAO.setContent(postDetail.getContent());
+        postDetailListDAO.setPostImgURL(postDetail.getPostImgURL());
+        return postDetailListDAO;
     }
 
     private PostDetailDAO mapPostToPostDetailDAO(Post post){

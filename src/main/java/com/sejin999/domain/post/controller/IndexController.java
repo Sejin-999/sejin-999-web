@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/index")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class IndexController {
 
     private final IndexService indexService;

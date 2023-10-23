@@ -1,6 +1,7 @@
 package com.sejin999.domain.user.service;
 
 import com.sejin999.domain.user.domain.User;
+import com.sejin999.domain.user.domain.UserRole;
 import com.sejin999.domain.user.repository.DAO.UserDAO;
 import com.sejin999.domain.user.repository.DTO.LoginDTO;
 import com.sejin999.domain.user.repository.DTO.UserDTO;
@@ -65,6 +66,7 @@ public class UserService {
                                 .id(userId)
                                 .password(userPassword)
                                 .nickName(userNickName)
+                                .role(UserRole.USER)
                                 .build()
                 );
                 return_text = "success";

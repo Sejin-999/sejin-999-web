@@ -30,6 +30,26 @@ public class UserController {
         return ResponseEntity.ok(return_text);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity registerController(@RequestBody UserDTO userSignUpDTO){
+        log.info("userSignUpDTO > id: {} password :{} nickName:{}", userSignUpDTO.getUserId(),
+                userSignUpDTO.getUserPassword(),
+                userSignUpDTO.getUserNickName());
+
+        if(userSignUpDTO.isCreateValid()){
+            log.info("userService Start");
+            String return_text = userService.user_signUp_service(userSignUpDTO);
+            if(return_text.equals("success")){
+                return ResponseEntity.ok(return_text);
+            }else{
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
+            }
+        }else{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("검증기준을 통과하지못하였습니다.");
+        }
+
+    }
+
     @PostMapping("/test_create")
     public ResponseEntity testUserCreateController(@RequestBody UserDTO userSignUpDTO ){
         log.info("testUserCreateController");

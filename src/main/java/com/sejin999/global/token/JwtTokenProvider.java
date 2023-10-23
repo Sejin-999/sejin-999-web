@@ -33,7 +33,7 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
     // 토큰 생성
-    public String createToken(String userPk, List<String> roles) {  // userPK = email
+    public String createToken(String userPk, List<String> roles) {
         log.info("createToken 1");
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
         claims.put("roles", roles); // 정보는 key / value 쌍으로 저장

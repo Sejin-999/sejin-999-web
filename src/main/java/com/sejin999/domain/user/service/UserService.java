@@ -2,14 +2,19 @@ package com.sejin999.domain.user.service;
 
 import com.sejin999.domain.user.domain.User;
 import com.sejin999.domain.user.repository.DAO.UserDAO;
+import com.sejin999.domain.user.repository.DTO.LoginDTO;
 import com.sejin999.domain.user.repository.DTO.UserDTO;
 import com.sejin999.domain.user.repository.UserJPARepository;
+import com.sejin999.global.token.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.IllformedLocaleException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,9 +24,10 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserJPARepository userJPARepository;
-
-    public UserService(UserJPARepository userJPARepository) {
+    private final JwtTokenProvider jwtTokenProvider;
+    public UserService(UserJPARepository userJPARepository, JwtTokenProvider jwtTokenProvider) {
         this.userJPARepository = userJPARepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     /**
@@ -31,6 +37,14 @@ public class UserService {
      * Update - user Data Update -> password , nickName
      * Delete - user delete
      */
+    public String user_login_service(LoginDTO loginDTO){
+        User user = userJPARepository.findById(loginDTO.getUserId()).orElseThrow(()-> new IllformedLocaleException("가입되지않은 유저입니다."));
+        if(!(loginDTO.getUserPass().equals(user.getPassword()))){
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+
+        return jwtTokenProvider.createToken(user.getId() , Collections.singletonList("user"));
+    }
 
     //signUp
     public String user_signUp_service(UserDTO userSignUpDTO){
@@ -91,7 +105,7 @@ public class UserService {
         log.info("user_update_service start >> {}" , userDTO.getUserId());
         String return_text = "";
         // userId 값으로 가지고올것 -> String 이기 때문에 Optional 로 불러서 체크를 일단해보고 .. 존재여부를 파악해야지
-        Optional<User> user = Optional.ofNullable(userJPARepository.findById(userDTO.getUserId()));
+        Optional<User> user = userJPARepository.findById(userDTO.getUserId());
 
         if (user.isPresent()) {
             User userToUpdate = user.get();
@@ -177,7 +191,7 @@ public class UserService {
         log.info("user_delete_service start >> {}" , userId);
         String return_text = "";
 
-        Optional<User> user = Optional.ofNullable(userJPARepository.findById(userId));
+        Optional<User> user = userJPARepository.findById(userId);
 
         if(user.isPresent()){
             User userDelete = user.get();

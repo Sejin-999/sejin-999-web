@@ -22,7 +22,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity loginController(@RequestBody LoginDTO loginDTO){
         log.info("login start >> {}",loginDTO.getUserId());
         String return_text = userService.user_login_service(loginDTO);

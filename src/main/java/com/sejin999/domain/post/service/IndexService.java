@@ -1,5 +1,6 @@
 package com.sejin999.domain.post.service;
 
+import com.sejin999.domain.global.service.S3Service;
 import com.sejin999.domain.post.domain.Index;
 import com.sejin999.domain.post.domain.IntroductionPost;
 import com.sejin999.domain.post.repository.DAO.IndexDAO;
@@ -14,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,9 +25,12 @@ import java.util.stream.Collectors;
 public class IndexService {
     private final IndexJPARepository indexJPARepository;
     private final IntroductionPostJPARepository introductionPostJPARepository;
-    public IndexService(IndexJPARepository indexJPARepository, IntroductionPostJPARepository introductionPostJPARepository) {
+
+    private final S3Service s3Service;
+    public IndexService(IndexJPARepository indexJPARepository, IntroductionPostJPARepository introductionPostJPARepository, S3Service s3Service) {
         this.indexJPARepository = indexJPARepository;
         this.introductionPostJPARepository = introductionPostJPARepository;
+        this.s3Service = s3Service;
     }
 
     /***
@@ -127,10 +132,14 @@ public class IndexService {
     public String index_create_service(IndexDTO indexDTO){
         String return_text = "";
         try {
+            //s3 service start
+           String fileURL = s3Service.uploadFile(file);
+
             indexJPARepository.save(
                     Index.builder()
                             .title(indexDTO.getTitle())
                             .content(indexDTO.getContent())
+                            .fileURL(fileURL)
                             .build()
             );
             return_text = "success";

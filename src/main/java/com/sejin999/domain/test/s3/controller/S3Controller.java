@@ -1,6 +1,6 @@
 package com.sejin999.domain.test.s3.controller;
 
-import com.sejin999.domain.test.s3.service.S3Service;
+import com.sejin999.domain.test.s3.service.TestS3Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/test")
 public class S3Controller {
     @Autowired
-    private S3Service s3Service;
+    private TestS3Service s3Service;
 
     @PostMapping("/uploadFileToS3")
     public String uploadFileToS3(@RequestParam("file") MultipartFile file) {

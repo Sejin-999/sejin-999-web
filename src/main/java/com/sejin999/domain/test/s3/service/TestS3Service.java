@@ -1,8 +1,8 @@
 package com.sejin999.domain.test.s3.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,10 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 @Service
 @Slf4j
-public class S3Service {
+public class TestS3Service {
     @Autowired
     private AmazonS3 s3Client;
 
@@ -21,14 +22,22 @@ public class S3Service {
     private String bucket;
 
     // MultipartFile을 S3에 업로드하는 메서드
-    public void uploadFile(MultipartFile file) throws IOException {
-
+    public String uploadFile(MultipartFile file) throws IOException {
+        String folderName =  "test";
         String fileName=file.getOriginalFilename();
-        String fileUrl= "https://" + bucket + "/test" +fileName;
+        String uploadFile = folderName+"/"+fileName;
+        //String fileUrl= "https://sejin-999-web-bucket.s3.ap-northeast-2.amazonaws.com/"+folderName+"/"+fileName;
         ObjectMetadata metadata= new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
-        s3Client.putObject(bucket,fileName,file.getInputStream(),metadata);
+
+        s3Client.putObject(bucket,uploadFile,file.getInputStream(),metadata);
+
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, uploadFile);
+        URL fileUrl = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+        log.info("file URL -> {}" , fileUrl);
+        String return_fileURL = String.valueOf(fileUrl);
+        return return_fileURL;
     }
 
     // MultipartFile을 File로 변환하는 유틸리티 메서드

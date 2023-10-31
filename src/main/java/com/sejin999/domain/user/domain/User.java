@@ -34,6 +34,11 @@ public class User {
     private String password;
     @Column(name = "NICKNAME" , nullable = false , length = 10)
     private String nickName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="ROLE" , nullable = false)
+    private UserRole role;
+
     @Column(name = "IS_CREATED" , nullable = false)
     @CreationTimestamp
     private LocalDateTime isCreated;

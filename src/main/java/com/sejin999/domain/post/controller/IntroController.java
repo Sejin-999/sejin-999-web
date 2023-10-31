@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/intro")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class IntroController {
     private final IndexService indexService;
     private final IntroductionPostService introductionPostService;

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -131,15 +132,19 @@ public class IndexService {
     //index 추가
     public String index_create_service(IndexDTO indexDTO){
         String return_text = "";
+        //create img file
+        indexDTO.getFileBase64Encoding();
+
+
         try {
             //s3 service start
-           String fileURL = s3Service.uploadFile(file);
+           //String fileURL = s3Service.uploadFile(file);
 
             indexJPARepository.save(
                     Index.builder()
                             .title(indexDTO.getTitle())
                             .content(indexDTO.getContent())
-                            .fileURL(fileURL)
+                            //.fileURL(fileURL)
                             .build()
             );
             return_text = "success";

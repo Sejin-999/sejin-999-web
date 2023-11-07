@@ -10,6 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 public class ImageData {
     @Id
-    private int randomNumber;
+    private String randomTag;
     private String imageURL;
 }

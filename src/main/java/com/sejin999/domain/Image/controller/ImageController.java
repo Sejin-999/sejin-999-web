@@ -21,8 +21,8 @@ public class ImageController {
      * 이미지 업로드 -> 임시 랜덤번호 부여 및 이미지 URL ,랜덤번호 noSQL -> mongo db에 store
      */
     private final ImageService imageService;
-    @GetMapping("/create_image")
-    public ResponseEntity index_create_controller(@RequestParam("file") MultipartFile file){
+    @GetMapping("/create_image/{function}")
+    public ResponseEntity index_create_controller(@RequestParam("file") MultipartFile file , @PathVariable String function){
 
         if(file.isEmpty()){
             log.warn("img not exists");
@@ -30,7 +30,7 @@ public class ImageController {
         }else{
             log.info("IMG UPLOAD START");
             try {
-                imageService.upload_img_service(file);
+                imageService.upload_img_service(file , function);
             }catch (Exception e) {
                 log.warn("img upload error \n {}" , e);
                 return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("not exists file");

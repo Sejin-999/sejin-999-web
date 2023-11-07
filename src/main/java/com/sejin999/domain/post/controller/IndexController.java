@@ -30,6 +30,19 @@ public class IndexController {
      * index Controller
      * @return
      */
+
+    /**
+     *
+     * 인덱스 크리에이터 과정
+     * 1. 이미지 업로드 API -> 성공시 success 반환 , 랜덤번호 반환
+     * 2. success를 받으면 데이터 를 통해 인덱스 데이터 정보 API
+     * 3. 인덱스 데이터 로직
+     * 3-1 . 이미지 업로드 시 URL 과 랜덤번호를 부여 -> mongo db에 임시저장 -> 랜덤번호는 반환
+     * 3-2 . 인덱스 크리에이터 정보 파트에 대한 요청이 들어옴(랜덤번호 포함) -> 알고리즘 실행 -> 완료시 mongo db에 저장해둔 임시 데이터를 삭제
+     * 3-3 . 만약 이미지가 없는 경우 이미지 정보를 다시보내라는 반환문을 준다..
+     */
+
+
     @GetMapping("/create_index")
     public ResponseEntity index_create_controller(@RequestBody IndexDTO indexDTO){
         log.info("index_create_controller >> index {}",indexDTO.getTitle());

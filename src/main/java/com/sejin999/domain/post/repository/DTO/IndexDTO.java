@@ -11,6 +11,8 @@ public class IndexDTO {
     private String title;
     private String content;
 
+    private String fileBase64Encoding;
+
     public boolean isCreateValid(){
         return isValidLength();
     }

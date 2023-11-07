@@ -30,6 +30,9 @@ public class Index {
         private String title;
         @Column(name = "CONTENT" , nullable = false , length = 200)
         private String content;
+
+        @Column(name = "fileURL" , nullable = false , length = 500)
+        private String fileURL;
         @Column(name = "IS_CREATED" , nullable = false)
         @CreationTimestamp
         private LocalDateTime isCreated;

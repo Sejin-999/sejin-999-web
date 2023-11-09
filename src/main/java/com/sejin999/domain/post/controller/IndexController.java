@@ -1,5 +1,6 @@
 package com.sejin999.domain.post.controller;
 
+import com.sejin999.domain.Image.service.ImageService;
 import com.sejin999.domain.post.repository.DAO.IndexDAO;
 import com.sejin999.domain.post.repository.DAO.IndexDetailDAO;
 import com.sejin999.domain.post.repository.DTO.IndexDTO;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,9 +20,10 @@ import java.util.List;
 public class IndexController {
 
     private final IndexService indexService;
-
-    public IndexController(IndexService indexService) {
+    private final ImageService imageService;
+    public IndexController(IndexService indexService, ImageService imageService) {
         this.indexService = indexService;
+        this.imageService = imageService;
     }
 
     /**
@@ -52,14 +53,28 @@ public class IndexController {
             //실패
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("검증기준을 통과하지못하였습니다.");
         }else{
-            log.info("index_create_controller : 검증성공..");
-            //성공
-            String return_text = indexService.index_create_service(indexDTO);
-            if(return_text.equals("success")){
-                return ResponseEntity.ok(return_text);
-            }else{
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
+            String imgURL = imageService.find_img_url_service(indexDTO.getImageTag());
+            if (imgURL.equals("not exists")){
+                   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("img Tag can't find");
+            }
+            else{
+                log.info("index_create_controller : 검증성공..");
+                //성공
+                String return_text = indexService.index_create_service(indexDTO , imgURL);
+                if(return_text.equals("success")){
+                    //모든 과정 종료 .. mongodb 유지 필요없음 .. -> 삭제요청
+                    String delete_mongo_msg = imageService.deleted_imgTag_service(indexDTO.getImageTag());
+                    if(delete_mongo_msg.equals("success")){
+                        return ResponseEntity.ok(return_text);
+                    }else{
+                        log.warn("Error -> mongo db deleted");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(delete_mongo_msg);
+                    }
+                    
+                }else{
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
 
+                }
             }
         }
     }

@@ -30,14 +30,12 @@ public class ImageController {
         }else{
             log.info("IMG UPLOAD START");
             try {
-                imageService.upload_img_service(file , function);
+                String randomTag = imageService.upload_img_service(file , function);
+                return ResponseEntity.ok(randomTag);
             }catch (Exception e) {
                 log.warn("img upload error \n {}" , e);
                 return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("not exists file");
             }
         }
-
-
-        return null;
     }
 }

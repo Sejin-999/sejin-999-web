@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "tempImgData")
+@Document("temp_img_data")
 @Getter
 @Setter
 public class ImageData {

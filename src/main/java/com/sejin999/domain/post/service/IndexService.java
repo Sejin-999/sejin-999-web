@@ -1,7 +1,6 @@
 package com.sejin999.domain.post.service;
 
-import com.sejin999.domain.global.service.S3Service;
-import com.sejin999.domain.global.util.Base64ToImageUtil;
+import com.sejin999.domain.Image.service.ImageService;
 import com.sejin999.domain.post.domain.Index;
 import com.sejin999.domain.post.domain.IntroductionPost;
 import com.sejin999.domain.post.repository.DAO.IndexDAO;
@@ -17,7 +16,6 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,13 +24,12 @@ import java.util.stream.Collectors;
 public class IndexService {
     private final IndexJPARepository indexJPARepository;
     private final IntroductionPostJPARepository introductionPostJPARepository;
-    private final Base64ToImageUtil base64ToImageUtil;
-    private final S3Service s3Service;
-    public IndexService(IndexJPARepository indexJPARepository, IntroductionPostJPARepository introductionPostJPARepository, Base64ToImageUtil base64ToImageUtil, S3Service s3Service) {
+    private final ImageService imageService;
+    public IndexService(IndexJPARepository indexJPARepository, IntroductionPostJPARepository introductionPostJPARepository, ImageService imageService) {
         this.indexJPARepository = indexJPARepository;
         this.introductionPostJPARepository = introductionPostJPARepository;
-        this.base64ToImageUtil = base64ToImageUtil;
-        this.s3Service = s3Service;
+
+        this.imageService = imageService;
     }
 
     /***
@@ -131,24 +128,15 @@ public class IndexService {
 
 
     //index 추가
-    public String index_create_service(IndexDTO indexDTO){
+    public String index_create_service(IndexDTO indexDTO , String fileURL){
         String return_text = "";
-        //create img file
-        indexDTO.getFileBase64Encoding();
-
 
         try {
-            //image transfer
-            byte[] saveImg = base64ToImageUtil.decodeBase64ToBytes(indexDTO.getFileBase64Encoding());
-
-            //s3 service start
-           //String fileURL = s3Service.uploadFile(file);
-
             indexJPARepository.save(
                     Index.builder()
                             .title(indexDTO.getTitle())
                             .content(indexDTO.getContent())
-                            //.fileURL(fileURL)
+                            .fileURL(fileURL)
                             .build()
             );
             return_text = "success";

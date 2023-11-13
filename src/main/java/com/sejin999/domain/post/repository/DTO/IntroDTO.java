@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntroDTO {
     private String title;
-    private String imageURL;
+    private String imageTag;
     private String content;
     private Long indexSeq;
 

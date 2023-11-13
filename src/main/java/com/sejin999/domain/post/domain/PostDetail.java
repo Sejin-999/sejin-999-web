@@ -24,7 +24,7 @@ public class PostDetail {
     private Long seq;
     @Column(name = "CONTENT" , nullable = false , length = 300)
     private String content;
-    @Column(name = "POST_IMG_URL" , nullable = false , length = 300)
+    @Column(name = "POST_IMG_URL" , nullable = false , length = 500)
     private String postImgURL;
     @Column(name = "IS_CREATED" , nullable = false)
     @CreationTimestamp

@@ -1,0 +1,14 @@
+spring:
+  data:
+    mongodb:
+      uri: #mongo URL
+
+cloud:
+  aws:
+    s3:
+      bucket: #bucket name
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: #accessKey
+      secretKey: #secretKey

@@ -10,8 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public class IndexDTO {
     private String title;
     private String content;
-
-    private String fileBase64Encoding;
+    private String imageTag;
 
     public boolean isCreateValid(){
         return isValidLength();

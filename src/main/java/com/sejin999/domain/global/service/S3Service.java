@@ -23,9 +23,9 @@ public class S3Service {
     @Autowired
     private String bucket;
 
+
     // MultipartFile을 S3에 업로드하는 메서드
-    public String uploadFile(MultipartFile file) throws IOException {
-        String folderName =  "test";
+    public String uploadFile(MultipartFile file , String folderName) throws IOException {
         String fileName=file.getOriginalFilename();
         String uploadFile = folderName+"/"+fileName;
         //String fileUrl= "https://sejin-999-web-bucket.s3.ap-northeast-2.amazonaws.com/"+folderName+"/"+fileName;
@@ -33,14 +33,21 @@ public class S3Service {
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
 
-        s3Client.putObject(bucket,uploadFile,file.getInputStream(),metadata);
+        try{
+            s3Client.putObject(bucket,uploadFile,file.getInputStream(),metadata);
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, uploadFile);
-        URL fileUrl = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
-        log.info("file URL -> {}" , fileUrl);
+            GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, uploadFile);
+            URL fileUrl = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+            log.info("file URL -> {}" , fileUrl);
 
-        String return_url = String.valueOf(fileUrl);
-        return return_url;
+            String return_url = String.valueOf(fileUrl);
+
+            return return_url;
+        }catch (Exception e){
+            log.warn("------ S3upload fail ------ \n{}",e);
+            return "fail";
+        }
+
     }
 
     // MultipartFile을 File로 변환하는 유틸리티 메서드

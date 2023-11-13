@@ -23,6 +23,7 @@ public class S3Service {
     @Autowired
     private String bucket;
 
+
     // MultipartFile을 S3에 업로드하는 메서드
     public String uploadFile(MultipartFile file , String folderName) throws IOException {
         String fileName=file.getOriginalFilename();

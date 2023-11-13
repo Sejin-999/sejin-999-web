@@ -89,9 +89,6 @@ public class IntroductionPostService {
                 introductionPost.setTitle(introDTO.getTitle());
             }
 
-            if (introDTO.getImageURL() != null && !introDTO.getImageURL().trim().isEmpty()) {
-                introductionPost.setImageURL(introDTO.getImageURL());
-            }
 
             if (introDTO.getContent() != null && !introDTO.getContent().trim().isEmpty()) {
                 introductionPost.setContent(introDTO.getContent());
@@ -125,7 +122,7 @@ public class IntroductionPostService {
         return return_text;
     }
 
-    public String Intro_create_service(IntroDTO introDTO){
+    public String Intro_create_service(IntroDTO introDTO , String imgURL){
         log.info("Intro_create_service >> start");
         String return_text;
 
@@ -136,7 +133,7 @@ public class IntroductionPostService {
                     IntroductionPost.builder()
                             .title(introDTO.getTitle())
                             .content(introDTO.getContent())
-                            .imageURL(introDTO.getImageURL())
+                            .imageURL(imgURL)
                             .indexEntity(index)
                             .build()
             );

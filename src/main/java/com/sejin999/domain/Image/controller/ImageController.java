@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -22,7 +24,7 @@ public class ImageController {
      */
     private final ImageService imageService;
     @GetMapping("/create_image/{function}")
-    public ResponseEntity index_create_controller(@RequestParam("file") MultipartFile file , @PathVariable String function){
+    public ResponseEntity img_create_controller(@RequestParam("file") MultipartFile file , @PathVariable String function){
 
         if(file.isEmpty()){
             log.warn("img not exists");
@@ -38,4 +40,30 @@ public class ImageController {
             }
         }
     }
+    @GetMapping("/create_image_several/{function}")
+    public ResponseEntity several_img_create_controller(@RequestParam("files") List<MultipartFile> files , @PathVariable String function){
+
+        if (files.isEmpty()) {
+            log.warn("이미지가 제공되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미지가 제공되지 않았습니다.");
+        } else {
+            log.info("이미지 업로드 시작");
+            List<String> randomTags = new ArrayList<>();
+
+            try {
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        String randomTag = imageService.upload_img_service(file, function);
+                        randomTags.add(randomTag);
+                    }
+                }
+                return ResponseEntity.ok(randomTags);
+            } catch (Exception e) {
+                log.warn("이미지 업로드 오류 \n {}", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 중 오류가 발생했습니다.");
+            }
+        }
+    }
+
+
 }

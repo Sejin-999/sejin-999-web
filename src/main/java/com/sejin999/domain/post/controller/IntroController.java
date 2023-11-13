@@ -1,5 +1,6 @@
 package com.sejin999.domain.post.controller;
 
+import com.sejin999.domain.Image.service.ImageService;
 import com.sejin999.domain.post.repository.DAO.IntroDetailDAO;
 import com.sejin999.domain.post.repository.DTO.IntroDTO;
 import com.sejin999.domain.post.repository.DTO.IntroUpdateDTO;
@@ -17,24 +18,39 @@ import org.springframework.web.bind.annotation.*;
 public class IntroController {
     private final IndexService indexService;
     private final IntroductionPostService introductionPostService;
-
-    public IntroController(IndexService indexService, IntroductionPostService introductionPostService) {
+    private final ImageService imageService;
+    public IntroController(IndexService indexService, IntroductionPostService introductionPostService, ImageService imageService) {
         this.indexService = indexService;
         this.introductionPostService = introductionPostService;
+        this.imageService = imageService;
     }
     @GetMapping("/create_intro")
     public ResponseEntity intro_create_service(@RequestBody IntroDTO introDTO){
         log.info("intro_create_service start");
+
         boolean testIndex = indexService.index_exists(introDTO.getIndexSeq());
+
         if(introDTO.isCreateValid() && testIndex){
             // 검증기준성공 && 인덱스가 존재
             // 성공
-            String return_text = introductionPostService.
-                    Intro_create_service(introDTO);
-            if(return_text.equals("success")){
-                return ResponseEntity.ok(return_text);
+            String imgURL = imageService.find_img_url_service(introDTO.getImageTag());
+            if(imgURL.equals("not exists")){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("img Tag can't find");
             }else{
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
+                String return_text = introductionPostService.
+                        Intro_create_service(introDTO , imgURL);
+                if(return_text.equals("success")){
+                    String delete_mongo_msg = imageService.deleted_imgTag_service(introDTO.getImageTag());
+                    if(delete_mongo_msg.equals("success")){
+                        return ResponseEntity.ok(return_text);
+                    }else{
+                        log.warn("Error -> mongo db deleted");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(delete_mongo_msg);
+                    }
+                }else{
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(return_text);
+
+                }
             }
         }else{
             // 실패

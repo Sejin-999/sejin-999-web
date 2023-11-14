@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -38,6 +37,19 @@ public class UserService {
      * Update - user Data Update -> password , nickName
      * Delete - user delete
      */
+    
+    public Optional<User> user_Finder_for_id_Service(String id){
+        if(userJPARepository.existsById(id)){
+            //존재
+            Optional<User> user = userJPARepository.findById(id);
+            return user;
+        }else{
+            //존재하지 않음
+            return null;
+        }
+
+    }
+    
     public String user_login_service(LoginDTO loginDTO){
         User user = userJPARepository.findById(loginDTO.getUserId()).orElseThrow(()-> new IllformedLocaleException("가입되지않은 유저입니다."));
         if(!(loginDTO.getUserPass().equals(user.getPassword()))){

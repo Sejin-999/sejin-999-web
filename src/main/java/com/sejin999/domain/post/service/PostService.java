@@ -34,7 +34,15 @@ public class PostService {
         this.postDetailJPARepository = postDetailJPARepository;
         this.imageService = imageService;
     }
-
+    public Post post_finder_for_seq_service(Long postSeq){
+        if(post_exists_service(postSeq)){
+            //존재
+            return postJPARepository.findBySeq(postSeq);
+        }else{
+            //없음
+            return null;
+        }
+    }
     public boolean post_exists_service(Long postSeq){
         return postJPARepository.existsBySeq(postSeq);
     }
